@@ -35,12 +35,30 @@ function add(scheme) {
 function update(changes, id) {
     return db('schemes')
     .where({ id })
-    .update(changes);
+    .update(changes)
+    .then(count => {
+        if (count > 0) {
+            return findById(id)
+            .then(scheme => {
+                return scheme;
+            });
+          } else {
+            return null;
+          }
+    }) 
 }
 
 function remove(id) {
-    return db('schemes')
-    .where({ id })
-    .del();
+ return findById(id)
+    .then(scheme => {
+      return db('schemes').where({ id }).del()
+        .then(count => {
+          if (count > 0) {
+            return scheme;
+          } else {
+            return null;
+          }
+        })
+    })
 }
   
